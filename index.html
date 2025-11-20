@@ -527,7 +527,6 @@
                 <div><button onclick="logout()" style="color: #ef4444;">🚪 Sair</button></div>
             </div>
             <div class="navbar-menu">
-                <button onclick="showScreen('clientDashboard')">RESERVAR</button>
                 <button onclick="showMyReservations()">MINHAS RESERVAS</button>
                 <button onclick="showAccommodations()">ACOMODAÇÕES</button>
                 <button onclick="loadServices()">SERVIÇOS</button>
@@ -542,14 +541,58 @@
                 <h1>Albergue LA, o melhor cantinho de Santa Teresa feito para você!</h1>
             </div>
 
-            <div class="grid">
-                <div class="room-card">
-                    <h2>BEM-VINDO AO ALBERGUE LA!</h2>
-                    <p style="margin: 20px 0;">ENCONTRE ACOMODAÇÕES PERSONALIZADAS COM OPÇÕES DE QUARTOS DIVERSOS.</p>
-                    <p style="margin: 20px 0;">RESERVE AGORA E NÃO PERCA A MELHOR EXPERIÊNCIA DO RIO DE JANEIRO!</p>
-                    <div style="background: #eff6ff; padding: 15px; border-radius: 15px;">
-                        <p><strong>Total de quartos disponíveis:</strong> <span id="availableRoomsCount">0</span></p>
+                <div class="grid">
+                    <div class="room-card" style="padding: 40px;">
+
+                    <h2 style="
+                        color: #1e3a8a;
+                        font-size: 32px;
+                        font-weight: 800;
+                        text-align: center;
+                        margin-bottom: 25px;
+                        letter-spacing: 1px;
+                    ">
+                        👋 BEM-VINDO AO ALBERGUE LA!
+                    </h2>
+
+                    <p style="
+                        margin: 15px 0;
+                        color: #374151;
+                        font-size: 18px;
+                        line-height: 1.6;
+                        text-align: center;
+                    ">
+                        Encontre acomodações confortáveis e personalizadas em um ambiente acolhedor,
+                        com diversas opções para tornar sua estadia ainda mais especial.
+                    </p>
+
+                    <p style="
+                        margin: 15px 0 30px;
+                        color: #374151;
+                        font-size: 18px;
+                        line-height: 1.6;
+                        text-align: center;
+                    ">
+                        Reserve agora e garanta a melhor experiência no coração do Rio de Janeiro!
+                    </p>
+
+                    <div style="
+                        background: #eff6ff;
+                        padding: 18px 20px;
+                        border-radius: 20px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 10px;
+                        font-size: 18px;
+                        font-weight: 600;
+                        border-left: 6px solid #1e3a8a;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+                    ">
+                        <span>📊 Total de quartos disponíveis:</span>
+                        <span id="availableRoomsCount" style="color: #1e3a8a; font-weight: 800;">0</span>
                     </div>
+
                 </div>
 
                 <div class="reservation-form">
@@ -580,14 +623,15 @@
                 <div><h1>🏢 ALBERGUE LA</h1></div>
                 <div><button onclick="logout()" style="color: #ef4444;">🚪 Sair</button></div>
             </div>
-            <div class="navbar-menu">
-                <button onclick="showScreen('clientDashboard')">RESERVAR</button>
-                <button onclick="showMyReservations()">MINHAS RESERVAS</button>
-            </div>
         </div>
 
         <div class="container">
+            <button onclick="showScreen('clientDashboard')" class="btn-secondary" style="margin-bottom:20px;">
+                ← Voltar
+            </button>
+
             <h1 style="color: #1e3a8a; font-size: 36px; margin-bottom: 30px;">Minhas Reservas</h1>
+            
             <div id="reservationsContainer"></div>
         </div>
     </div>
