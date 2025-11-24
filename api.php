@@ -272,6 +272,39 @@ if ($action === 'cancel_reservation' && $method === 'PUT') {
     exit;
 }
 
+if ($action === 'admin_cancel_reservation' && $method === 'PUT') {
+    $input = json_decode(file_get_contents("php://input"), true);
+    $id = $input['id'];
+    $reason = $input['reason'];
+
+    // salva motivo
+    $stmt = $pdo->prepare("UPDATE reservations SET status='cancelada', cancel_reason=? WHERE id=?");
+    $success = $stmt->execute([$reason, $id]);
+
+    // pegar email do cliente
+    $stmtUser = $pdo->prepare("SELECT u.email FROM reservations r JOIN users u ON r.user_id = u.id WHERE r.id=?");
+    $stmtUser->execute([$id]);
+    $userData = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+    if ($userData && $userData['email']) {
+        $email = $userData['email'];
+        $subject = "Sua reserva foi cancelada";
+        $message = "Olá, sua reserva foi cancelada.\nMotivo: $reason";
+        $headers = "From: contato@albergue.com";
+
+        mail($email, $subject, $message, $headers);
+    }
+
+    if ($success) {
+        echo json_encode(["success" => true, "message" => "Reserva cancelada com motivo"]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Erro ao cancelar"]);
+    }
+    exit;
+}
+
+
+
 /* ============================================================
    ESTATÍSTICAS
 ============================================================ */
