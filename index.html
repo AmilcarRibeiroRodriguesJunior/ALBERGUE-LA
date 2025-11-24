@@ -862,7 +862,8 @@
                                 <p style="font-weight: bold; color: #065f46;">Opção 1: Chave PIX Aleatória (Simulação)</p>
                                 <code style="display: block; margin: 10px 0; padding: 10px; background: white; border-radius: 5px; font-size: 14px; word-break: break-all;">e5f9g7h1-i3j5-k7l9-m1n3-o5p7q9r1s3t5</code>
                                 <p style="font-weight: bold; margin-top: 20px; color: #065f46;">Opção 2: QR Code</p>
-                                <img src="qr_code.png" alt="QR Code Pix Simulado" style="width: 150px; height: 150px; margin-top: 10px; border: 1px solid #ccc;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Link_pra_pagina_principal_da_Wikipedia-PT_em_codigo_QR_b.svg/960px-Link_pra_pagina_principal_da_Wikipedia-PT_em_codigo_QR_b.svg.png"
+                                    style="max-width: 200px; border-radius: 10px;">
                                 <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">Escaneie o QR Code ou copie a chave para pagar no app do seu banco.</p>
                             </div>
                             <p style="margin-top: 15px; color: #ef4444; font-weight: 600;">⚠️ Importante: O pagamento via Pix deve ser realizado imediatamente.</p>
@@ -1327,6 +1328,29 @@
             }
         }
 
+        async function adminCancelReservation(reservationId) {
+            if (!confirm("⚠️ Confirmar cancelamento desta reserva?")) return;
+
+            try {
+                const response = await fetch(API_URL + '?action=cancel_reservation', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: reservationId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("✔ Reserva cancelada");
+                    await loadAdminDashboard();
+                } else {
+                    alert("❌ Erro: " + data.message);
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+            }
+        }
+
         /* ======================= SERVIÇOS ======================= */
         async function loadServices() {
             try {
@@ -1679,15 +1703,46 @@
                 const adminContainer = document.getElementById('adminReservationsContainer');
                 adminContainer.innerHTML = '';
 
-                reservations.slice(0, 10).forEach(reservation => {
-                    let statusClass = 'status-confirmada';
-                    if (reservation.status === 'cancelada') statusClass = 'status-cancelada';
+                reservations.slice(0, 20).forEach(reservation => {
+                    let statusClass = reservation.status === 'cancelada'
+                        ? 'status-cancelada'
+                        : 'status-confirmada';
 
                     const div = document.createElement('div');
                     div.style.borderBottom = '1px solid #f3f4f6';
                     div.style.paddingBottom = '15px';
                     div.style.marginBottom = '15px';
-                    div.innerHTML = '<div style="display: flex; justify-content: space-between; margin-bottom: 10px;"><div><p style="font-weight: 600; color: #1e3a8a;">' + reservation.user_name + '</p><p style="color: #6b7280; font-size: 14px;">Quarto ' + reservation.room_number + '</p></div><span class="status-badge ' + statusClass + '">' + reservation.status + '</span></div><p style="color: #6b7280; font-size: 12px;">' + new Date(reservation.check_in).toLocaleDateString('pt-BR') + ' - ' + new Date(reservation.check_out).toLocaleDateString('pt-BR') + '</p>';
+
+                    let cancelButton = '';
+                    if (reservation.status === 'confirmada') {
+                        cancelButton = `
+                            <button class="btn-danger"
+                                onclick="adminCancelReservation(${reservation.id})">
+                                ❌ Cancelar
+                            </button>`;
+                    }
+
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <div>
+                                <p style="font-weight: 600; color: #1e3a8a;">${reservation.user_name}</p>
+                                <p style="color: #6b7280; font-size: 14px;">
+                                    Quarto ${reservation.room_number}
+                                </p>
+                            </div>
+                            <span class="status-badge ${statusClass}">
+                                ${reservation.status}
+                            </span>
+                        </div>
+
+                        <p style="color: #6b7280; font-size: 12px;">
+                            ${new Date(reservation.check_in).toLocaleDateString('pt-BR')} -
+                            ${new Date(reservation.check_out).toLocaleDateString('pt-BR')}
+                        </p>
+
+                        ${cancelButton}
+                    `;
+
                     adminContainer.appendChild(div);
                 });
 
@@ -1697,6 +1752,34 @@
         }
 
         let editingRoomId = null;
+
+        async function adminCancelReservation(reservationId) {
+            const reason = prompt("Digite o motivo do cancelamento:");
+
+            if (!reason || reason.trim() === "") {
+                alert("Você precisa informar um motivo para cancelar.");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + '?action=cancel_reservation', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: reservationId, reason: reason })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("✔ Reserva cancelada pelo admin");
+                    await loadAdminDashboard();
+                } else {
+                    alert("❌ Erro ao cancelar: " + data.message);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+            }
+        }
 
         /* ============================= ABRIR FORM ============================ */
         function showCreateRoomForm() {
